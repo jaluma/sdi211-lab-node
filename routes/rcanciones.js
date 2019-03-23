@@ -1,6 +1,6 @@
-module.exports = function (app, swig) {
+module.exports = function (app, swig, mongo) {
     app.get("/canciones", function (req, res) {
-        var canciones = [{
+        const canciones = [{
             "nombre": "Blank space",
             "precio": "1.2"
         }, {
@@ -10,7 +10,7 @@ module.exports = function (app, swig) {
             "nombre": "Uptown Funk",
             "precio": "1.1"
         }];
-        var respuesta = swig.renderFile('views/btienda.html', {
+        const respuesta = swig.renderFile('views/btienda.html', {
             vendedor: 'Tienda de canciones',
             canciones: canciones
         });
@@ -18,24 +18,41 @@ module.exports = function (app, swig) {
     });
 
     app.get('/canciones/agregar', function (req, res) {
-        var respuesta = swig.renderFile('views/bagregar.html', {});
+        const respuesta = swig.renderFile('views/bagregar.html', {});
         res.send(respuesta);
     });
 
     app.get('/canciones/:id', function (req, res) {
-        var respuesta = 'id: ' + req.params.id;
+        const respuesta = 'id: ' + req.params.id;
         res.send(respuesta);
     });
     app.get('/canciones/:genero/:id', function (req, res) {
-        var respuesta = 'id: ' + req.params.id + '<br>'
+        const respuesta = 'id: ' + req.params.id + '<br>'
             + 'Genero: ' + req.params.genero;
         res.send(respuesta);
     });
 
     app.post("/cancion", function (req, res) {
-        res.send("Canción agregada:" + req.body.nombre + "<br>"
-            + " genero :" + req.body.genero + "<br>"
-            + " precio: " + req.body.precio);
+        var cancion = {
+            nombre: req.body.nombre,
+            genero: req.body.genero,
+            precio: req.body.precio
+        };
+        mongo.MongoClient.connect(app.get('db'), function (err, db) {
+            if (err) {
+                res.send("Error de conexión: " + err);
+            } else {
+                var collection = db.collection('canciones');
+                collection.insert(cancion, function (err, result) {
+                    if (err) {
+                        res.send("Error al insertar " + err);
+                    } else {
+                        res.send("Agregada id:  " + result.ops[0]._id);
+                    }
+                    db.close();
+                });
+            }
+        });
     });
 
     app.get('/promo*', function (req, res) {
