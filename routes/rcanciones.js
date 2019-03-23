@@ -18,30 +18,39 @@ module.exports = function (app, swig, gestorBD) {
     });
 
     app.get('/canciones/agregar', function (req, res) {
-        const respuesta = swig.renderFile('views/bagregar.html', {});
-        res.send(respuesta);
+        if (req.session.usuario == null) {
+            res.redirect("/tienda");
+            return;
+        }
+        res.send(swig.renderFile('views/bagregar.html', {}));
     });
 
     app.get('/cancion/:id', function (req, res) {
         const criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
         gestorBD.obtenerCanciones(criterio, function (canciones) {
+            let respuesta = swig.renderFile('views/bcancion.html',
+                {
+                    cancion: canciones[0]
+                });
             if (canciones == null) {
                 res.send(respuesta);
             } else {
-                var respuesta = swig.renderFile('views/bcancion.html',
-                    {
-                        cancion: canciones[0]
-                    });
                 res.send(respuesta);
             }
         });
     });
 
     app.post("/cancion", function (req, res) {
-        var cancion = {
+        if (req.session.usuario == null) {
+            res.redirect("/tienda");
+            return;
+        }
+
+        let cancion = {
             nombre: req.body.nombre,
             genero: req.body.genero,
-            precio: req.body.precio
+            precio: req.body.precio,
+            autor: req.session.usuario
         };
         // Conectarse
         gestorBD.insertarCancion(cancion, function (id) {
@@ -49,13 +58,13 @@ module.exports = function (app, swig, gestorBD) {
                 res.send("Error al insertar canción");
             } else {
                 if (req.files.portada != null) {
-                    var imagen = req.files.portada;
+                    let imagen = req.files.portada;
                     imagen.mv('public/portadas/' + id + '.png', function (err) {
                         if (err) {
                             res.send("Error al subir la portada");
                         } else {
                             if (req.files.audio != null) {
-                                var audio = req.files.audio;
+                                let audio = req.files.audio;
                                 audio.mv('public/audios/' + id + '.mp3', function (err) {
                                     if (err) {
                                         res.send("Error al subir el audio");
