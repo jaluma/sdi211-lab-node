@@ -2,13 +2,15 @@
 const express = require('express');
 const app = express();
 
-var mongo = require('mongodb');
-var swig = require('swig');
-var bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
+const mongo = require('mongodb');
+const swig = require('swig');
+const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-var gestorBD = require("./modules/gestorBD.js");
+const gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app, mongo);
 
 app.use(express.static('public'));
