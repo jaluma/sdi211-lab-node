@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titulo %} Error {% endblock %}
+{% block contenido_principal %}
+    <h1 class="alert alert-danger text-center">
+        <span>{{status}} {{error}}</span>
+    </h1>
+
+    <p class="text-center align-middle">
+        <a class="btn btn-outline-danger btn-lg" href="/">
+            <!--<i class="material-icons align-middle">home</i>-->
+            <span class="align-middle">Ir a Home</span>
+        </a>
+    </p>
+{% endblock %}

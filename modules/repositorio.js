@@ -5,6 +5,10 @@ module.exports = class Repositorio {
         this.page = 4;
     }
 
+    static callback(err, result, funcionCallback) {
+        funcionCallback(err ? null : result);
+    }
+
     insert(collection, funcionCallback, item) {
         this.connection(funcionCallback, (db) => {
             db.collection(collection).insert(item, (err, result) => {
@@ -43,10 +47,6 @@ module.exports = class Repositorio {
                 Repositorio.callback(err, result, funcionCallback);
             });
         });
-    }
-
-    static callback(err, result, funcionCallback) {
-        funcionCallback(err ? null : result);
     }
 
     connection(funcionCallback, funcionExito) {
