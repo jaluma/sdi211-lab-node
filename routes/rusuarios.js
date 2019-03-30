@@ -1,4 +1,4 @@
-module.exports = function (app, swig, gestorBD) {
+module.exports = function (app, swig, usuariosService) {
     app.get("/usuarios", function (req, res) {
         res.send("ver usuarios");
     });
@@ -24,12 +24,13 @@ module.exports = function (app, swig, gestorBD) {
             password: seguro
         };
 
-        gestorBD.insertarUsuario(usuario, function (id) {
+        usuariosService.insertarUsuario(usuario, function (id) {
             if (id == null) {
-                res.redirect("/registrarse?mensaje=Error al registrar usuario")
-            } else {
-                res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
+                res.redirect("/registrarse?mensaje=Error al registrar usuario");
+                return;
             }
+
+            res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
         });
     });
 
@@ -40,16 +41,15 @@ module.exports = function (app, swig, gestorBD) {
             email: req.body.email,
             password: seguro
         };
-        gestorBD.obtenerUsuarios(criterio, function (usuarios) {
+        usuariosService.obtenerUsuarios(criterio, function (usuarios) {
             if (usuarios == null || usuarios.length === 0) {
                 req.session.usuario = null;
-                res.redirect("/identificarse" +
-                    "?mensaje=Email o password incorrecto" +
-                    "&tipoMensaje=alert-danger ");
-            } else {
-                req.session.usuario = usuarios[0].email;
-                res.redirect("/publicaciones");
+                res.redirect("/identificarse?mensaje=Email o password incorrecto&tipoMensaje=alert-danger");
+                return;
             }
+
+            req.session.usuario = usuarios[0].email;
+            res.redirect("/publicaciones");
         });
     });
 };
