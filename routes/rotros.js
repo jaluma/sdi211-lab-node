@@ -21,9 +21,9 @@ module.exports = {
 
         app.use(fn);
 
-        app.get('*', function (req, res, next) {
-            let err = new Error('Esta página no esta disponible');
-            fn(err, req, res, next);
-        });
+        // app.get('*', function (req, res, next) {
+        //     let err = new Error('Esta página no esta disponible');
+        //     fn(err, req, res, next);
+        // });
     }
 };

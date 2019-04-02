@@ -120,7 +120,7 @@ module.exports = function (app, cancionesService, usuariosService) {
 
     function send(res, status, json) {
         res.status(status);
-        res.json(json);
+        res.type('json').send(json);
     }
 
 };
