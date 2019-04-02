@@ -55,6 +55,7 @@ app.set('crypto', crypto);
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, usuariosService);
 require("./routes/rcanciones.js")(app, swig, cancionesService);
+require("./routes/rapicanciones.js")(app, cancionesService);
 require("./routes/rcompras.js")(app, swig, comprasService);
 
 const rotros = require("./routes/rotros");
