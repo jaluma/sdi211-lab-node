@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
+const jwt = require('jsonwebtoken');
+app.set('jwt', jwt);
+
 const fs = require('fs');
 const https = require('https');
 
@@ -37,9 +40,8 @@ comprasService.init(repo);
 // routerUsuarioSession
 const iUsuario = require('./routes/intercertors/iusuarios');
 iUsuario.usuario(app, express);
-
-//routerUsuarioAutor
 iUsuario.autor(app, express, cancionesService);
+iUsuario.token(app, express);
 
 //routerAudios
 const iCanciones = require('./routes/intercertors/icanciones');
@@ -55,7 +57,7 @@ app.set('crypto', crypto);
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, usuariosService);
 require("./routes/rcanciones.js")(app, swig, cancionesService);
-require("./routes/rapicanciones.js")(app, cancionesService);
+require("./routes/rapicanciones.js")(app, cancionesService, usuariosService);
 require("./routes/rcompras.js")(app, swig, comprasService);
 
 const rotros = require("./routes/rotros");
