@@ -55,7 +55,7 @@ module.exports = function (app, swig, cancionesService) {
         };
         // Conectarse
         cancionesService.insertarCancion(cancion, function (id) {
-            if (id == null || req.files.portada || req.files.audio) {
+            if (id == null) {
                 res.redirect("/publicaciones?mensaje=La canción no se ha podido insertar&tipoMensaje=alert-danger");
                 return;
             }
@@ -107,17 +107,21 @@ module.exports = function (app, swig, cancionesService) {
         });
     });
 
+    app.get('/buscar', function (req, res) {
+        res.redirect('/tienda?busqueda=' + req.query.busqueda);
+    });
+
     app.get("/tienda", function (req, res) {
         let criterio = {};
         if (req.query.busqueda != null) {
-            criterio = {"nombre": {$regex: ".*" + req.query.busqueda + ".*"}};
+            criterio = {"nombre": {$regex: ".*" + req.query.busqueda + ".*", $options: 'i'}};
         }
         let pg = parseInt(req.query.pg); // Es String !!!
 
         if (req.query.pg == null) { // Puede no venir el param
             pg = 1;
         }
-        cancionesService.obtenerCancionesPg(criterio, pg, function (canciones, total) {
+        cancionesService.obtenerCancionesPg(criterio, pg, function (canciones) {
             if (canciones == null) {
                 let respuesta = swig.renderFile('views/btienda.html',
                     {
@@ -129,24 +133,32 @@ module.exports = function (app, swig, cancionesService) {
                 return;
             }
 
-            let ultimaPg = total / 4;
-            if (total % 4 > 0) { // Sobran decimales
-                ultimaPg = ultimaPg + 1;
-            }
-            let paginas = []; // paginas mostrar
-            for (let i = pg - 2; i <= pg + 2; i++) {
-                if (i > 0 && i <= ultimaPg) {
-                    paginas.push(i);
+            cancionesService.totalCanciones(criterio, function (total) {
+                if (total == null) {
+                    return;
                 }
-            }
-            let respuesta = swig.renderFile('views/btienda.html',
-                {
-                    canciones: canciones,
-                    paginas: paginas,
-                    actual: pg
-                });
 
-            res.send(respuesta);
+                let ultimaPg = total / 4;
+                if (total % 4 > 0) { // Sobran decimales
+                    ultimaPg = ultimaPg + 1;
+                }
+                let paginas = []; // paginas mostrar
+                for (let i = pg - 2; i <= pg + 2; i++) {
+                    if (i > 0 && i <= ultimaPg) {
+                        paginas.push(i);
+                    }
+                }
+                let respuesta = swig.renderFile('views/btienda.html',
+                    {
+                        canciones: canciones,
+                        paginas: paginas,
+                        actual: pg
+                    });
+
+                res.send(respuesta);
+            });
+
+
         });
     });
 

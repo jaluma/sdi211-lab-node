@@ -49,10 +49,21 @@ module.exports = class Repositorio {
         });
     }
 
+    countItems(collection, funcionCallback, criterio) {
+        this.connection(() => {
+        }, (db) => {
+            db.collection(collection).count(criterio, (err, numItems) => {
+                Repositorio.callback(err, numItems, funcionCallback);
+            });
+        });
+    }
+
     connection(funcionCallback, funcionExito) {
         this.mongo.MongoClient.connect(this.app.get('db'), (err, db) => {
-            if (err)
+            if (err) {
                 funcionCallback(null);
+                return;
+            }
 
             funcionExito(db);
         });

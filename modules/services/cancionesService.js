@@ -16,6 +16,9 @@ module.exports = {
         this.repositorio.findAll('canciones', funcionCallback, criterio);
     },
     obtenerCancionesPg: function (criterio, pg, funcionCallback) {
-        this.repositorio.findAllPage('canciones', funcionCallback, criterio, pg,);
+        this.repositorio.findAllPage('canciones', funcionCallback, criterio, pg);
     },
+    totalCanciones: function (criterio, funcionCallback) {
+        return this.repositorio.countItems('canciones', funcionCallback, criterio);
+    }
 };

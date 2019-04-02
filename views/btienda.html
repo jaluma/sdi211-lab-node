@@ -5,14 +5,20 @@
 	<!-- Búsqueda -->
 	<div class="row">
 		<div id="custom-search-input ">
-			<form method="get" action="/tienda">
+			<form method="get" action="#">
 				<div class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5 pull-right">
-					<input type="text" class="search-query form-control" placeholder="Nombre de la canción"
+					<input type="text" class="search-query form-control" id="search" placeholder="Nombre de la canción"
 					       name="busqueda"/>
 					<span class="input-group-btn">
-						<button class="btn" type="submit">
+						<button class="btn" id="buscar" type="button">
 							<span class="glyphicon glyphicon-search"></span>
 						</button>
+						<script>
+						    $('#buscar').click(function () {
+                                let searchText = $('#search').val();
+                                window.location.href = '/tienda?busqueda=' + searchText;
+                            });
+						</script>
 					</span>
 				</div>
 			</form>
